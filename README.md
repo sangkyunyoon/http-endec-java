@@ -20,26 +20,38 @@ HTTP encoder/decoder in JAVA.
 
 <b>Build HTTP request</b>
 
-`HttpFrame frameRequest = new HttpFrame(HttpMethod.POST_REQUEST,<br/> new HttpVersion(1, 1),<br/> new HashMap<String, String>(),<br/>"/rest/help/todo",<br/> new ListOfBytes("kind of body"));`
+`HttpFrame frameRequest = new HttpFrame(`<br/>
+\t`								HttpMethod.POST_REQUEST      ,`<br/>
+`								new HttpVersion(1, 1)        ,`<br/>
+`								new HashMap<String, String>(),`<br/>
+`								"/rest/help/todo"            ,`<br/>
+`								new ListOfBytes("kind of body")`<br/>
+`							);`
 
 `frameRequest.toString()` will print : 
 
 `POST /rest/help/todo HTTP/1.1`<br/>
-``<br/>
-``kind of body<br/>
-``<br/>
-``<br/>
+`` `` <br/>
+``kind of body``<br/>
+`` ``<br/>
+`` ``<br/>
+
 <hr/>
 
 <b>Build HTTP response</b>
 
-`HttpResponseFrame frameResponse = new HttpResponseFrame(new StatusCodeObject(200, "OK"),<br/> new HttpVersion(1, 1),<br/> new HashMap<String, String>(),<br/> "");`
+`HttpResponseFrame frameResponse = new HttpResponseFrame(`<br/>
+`									new StatusCodeObject(200, "OK"),`<br/>
+`									new HttpVersion(1, 1),`<br/>
+`									new HashMap<String, String>(),`<br/>
+`									""`<br/>
+`									);`
 
 `frameResponse.toString()` will print : 
 
 `HTTP/1.1 200 OK`<br/>
-``<br/>
-``<br/>
+`` ``<br/>
+`` ``<br/>
 
 <hr/>
 

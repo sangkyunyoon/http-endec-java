@@ -21,7 +21,7 @@ HTTP encoder/decoder in JAVA.
 <b>Build HTTP request</b>
 
 `HttpFrame frameRequest = new HttpFrame(`<br/>
-\t`								HttpMethod.POST_REQUEST      ,`<br/>
+`								HttpMethod.POST_REQUEST      ,`<br/>
 `								new HttpVersion(1, 1)        ,`<br/>
 `								new HashMap<String, String>(),`<br/>
 `								"/rest/help/todo"            ,`<br/>

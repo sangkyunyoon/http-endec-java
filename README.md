@@ -13,33 +13,33 @@ HTTP encoder/decoder in JAVA.
 
 * You can build HTTP request/response independently from Http parser
 
-`http-endec-java`      : library source
+`http-endec-java`      : library source<br/>
 `http-endec-java-test` : test unit for library source
 
 <hr/>
 
 <b>Build HTTP request</b>
 
-`HttpFrame frameRequest = new HttpFrame(HttpMethod.POST_REQUEST, new HttpVersion(1, 1), new HashMap<String, String>(),"/rest/help/todo", new ListOfBytes("kind of body"));`
+`HttpFrame frameRequest = new HttpFrame(HttpMethod.POST_REQUEST,<br/> new HttpVersion(1, 1),<br/> new HashMap<String, String>(),<br/>"/rest/help/todo",<br/> new ListOfBytes("kind of body"));`
 
 `frameRequest.toString()` will print : 
 
-`POST /rest/help/todo HTTP/1.1<br/>
-`<br/>
-`kind of body<br/>
-`<br/>
-`<br/>
+`POST /rest/help/todo HTTP/1.1`<br/>
+``<br/>
+``kind of body<br/>
+``<br/>
+``<br/>
 <hr/>
 
 <b>Build HTTP response</b>
 
-`HttpResponseFrame frameResponse = new HttpResponseFrame(new StatusCodeObject(200, "OK"), new HttpVersion(1, 1), new HashMap<String, String>(), "");`
+`HttpResponseFrame frameResponse = new HttpResponseFrame(new StatusCodeObject(200, "OK"),<br/> new HttpVersion(1, 1),<br/> new HashMap<String, String>(),<br/> "");`
 
 `frameResponse.toString()` will print : 
 
-`HTTP/1.1 200 OK<br/>
-`<br/>
-`<br/>
+`HTTP/1.1 200 OK`<br/>
+``<br/>
+``<br/>
 
 <hr/>
 

@@ -21,11 +21,11 @@ HTTP encoder/decoder in JAVA.
 <b>Build HTTP request</b>
 
 `HttpFrame frameRequest = new HttpFrame(`<br/>
-`								HttpMethod.POST_REQUEST      ,`<br/>
-`								new HttpVersion(1, 1)        ,`<br/>
-`								new HashMap<String, String>(),`<br/>
-`								"/rest/help/todo"            ,`<br/>
-`								new ListOfBytes("kind of body")`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`								HttpMethod.POST_REQUEST      ,`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`								new HttpVersion(1, 1)        ,`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`								new HashMap<String, String>(),`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`								"/rest/help/todo"            ,`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`								new ListOfBytes("kind of body")`<br/>
 `							);`
 
 `frameRequest.toString()` will print : 
@@ -41,11 +41,11 @@ HTTP encoder/decoder in JAVA.
 <b>Build HTTP response</b>
 
 `HttpResponseFrame frameResponse = new HttpResponseFrame(`<br/>
-`									new StatusCodeObject(200, "OK"),`<br/>
-`									new HttpVersion(1, 1),`<br/>
-`									new HashMap<String, String>(),`<br/>
-`									""`<br/>
-`									);`
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`new StatusCodeObject(200, "OK"),`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`new HttpVersion(1, 1),`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`new HashMap<String, String>(),`<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`""`<br/>
+`);`
 
 `frameResponse.toString()` will print : 
 

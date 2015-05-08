@@ -71,7 +71,7 @@ public class HttpEndec {
 	 */
 	public static void main(String[] args)
 	{
-		
+		System.out.println("HTTP REQUEST TEST ");
 		/* Build custom HTTP Post request with specified headers*/
 		
 		HashMap<String, String> headers = new HashMap<String, String>();
@@ -86,6 +86,7 @@ public class HttpEndec {
 		System.out.println(frameRequest.toString());
 		
 		System.out.println("##########################################");
+		System.out.println("HTTP RESPONSE TEST ");
 		/*Build custom HTTP response with specified headers */
 		
 		headers = new HashMap<String, String>();
@@ -101,6 +102,7 @@ public class HttpEndec {
 		System.out.println(frameResponse.toString());
 		
 		System.out.println("##########################################");
+		System.out.println("HTTP PARSE TEST1 ");
 		/* Parse HTTP inputstream (Response test)*/
 		String basicHttpHeader = "HTTP/1.1 200 OK";
 
@@ -133,6 +135,7 @@ public class HttpEndec {
 			e.printStackTrace();
 		}
 		System.out.println("##########################################");
+		System.out.println("HTTP PARSE TEST2 ");
 		/* Parse HTTP inputstream (Request test)*/
 		basicHttpHeader = "POST /rest/help/todo HTTP/1.1\r\nheaders1:  value1\r\nheaders2:  value2\r\nContent-Length:  15\r\n\r\nbodyTobeWritten\r\n";
 

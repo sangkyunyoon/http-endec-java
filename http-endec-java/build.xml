@@ -9,7 +9,7 @@
     <target name="create_run_jar">
         <jar destfile="${basedir}/release/http-endec-${version}.jar" filesetmanifest="mergewithoutmain">
             <manifest>
-            	<attribute name="Main-Class" value="HttpEndec"/>
+            	<attribute name="Main-Class" value="fr.bmartel.httpendec.HttpEndec"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="${basedir}/bin"/>

@@ -1,3 +1,26 @@
+/**
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2015 Bertrand Martel
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package fr.bmartel.httpendec;
 
 import java.io.ByteArrayInputStream;
@@ -15,6 +38,25 @@ import fr.bmartel.protocol.http.constants.HttpMethod;
 import fr.bmartel.protocol.http.utils.ListOfBytes;
 
 /**
+ * @mainpage  HTTP Java encoder / decoder
+ * 
+ * 
+HTTP encoder/decoder in JAVA.
+
+* parse all your HTTP streaming
+
+* chunk your bufferized data into outputstream according to value `fr.bmartel.protocol.socket.DataBufferConst.DATA_BLOCK_SIZE_LIMIT` (you can change this value if you use a JVM which does not support this one)
+* All HTTP stream is encoded in UTF-8
+
+* You can build HTTP request/response independently from Http parser
+
+`http-endec-java`      : library source<br/>
+`http-endec-java-test` : test unit for library source
+
+
+ */
+/**
+ * 
  * Test for http-endec-java project
  * 
  * @author Bertrand Martel

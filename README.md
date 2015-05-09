@@ -6,6 +6,9 @@ http://akinaru.github.io/http-endec-java/
 
 HTTP encoder/decoder in JAVA.
 
+This endec works with streaming data in a socket-blocking configuration. 
+It will block until the whole current HTTP frame is totally parsed.
+
 * parse all your HTTP streaming
 
 * chunk your bufferized data into outputstream according to value `fr.bmartel.protocol.socket.DataBufferConst.DATA_BLOCK_SIZE_LIMIT` (you can change this value if you use a JVM which does not support this one)

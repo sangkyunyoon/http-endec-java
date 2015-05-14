@@ -23,46 +23,54 @@ It will block until the whole current HTTP frame is totally parsed.
 
 <b>Build HTTP request</b>
 
-`HttpFrame frameRequest = new HttpFrame(`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`								HttpMethod.POST_REQUEST      ,`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`								new HttpVersion(1, 1)        ,`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`								new HashMap<String, String>(),`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`								"/rest/help/todo"            ,`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`								new ListOfBytes("kind of body")`<br/>
-`							);`
+```
+HttpFrame frameRequest = new HttpFrame(
+								HttpMethod.POST_REQUEST      ,
+								new HttpVersion(1, 1)        ,
+								new HashMap<String, String>(),
+								"/rest/help/todo"            ,
+								new ListOfBytes("kind of body")
+							);
+```
 
-`frameRequest.toString()` will print : 
+frameRequest.toString()` will print : 
 
-`POST /rest/help/todo HTTP/1.1`<br/>
-`` `` <br/>
-``kind of body``<br/>
-`` ``<br/>
-`` ``<br/>
+```
+POST /rest/help/todo HTTP/1.1
 
+kind of body
+
+```
 <hr/>
 
 <b>Build HTTP response</b>
 
-`HttpResponseFrame frameResponse = new HttpResponseFrame(`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`new StatusCodeObject(200, "OK"),`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`new HttpVersion(1, 1),`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`new HashMap<String, String>(),`<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`""`<br/>
-`);`
+```
+HttpResponseFrame frameResponse = new HttpResponseFrame(
+new StatusCodeObject(200, "OK"),
+new HttpVersion(1, 1),
+new HashMap<String, String>(),
+""
+);
+```
 
 `frameResponse.toString()` will print : 
 
-`HTTP/1.1 200 OK`<br/>
-`` ``<br/>
-`` ``<br/>
+```
+HTTP/1.1 200 OK
+
+
+```
 
 <hr/>
 
 <b>Parse your HTTP inputstream</b>
 
-`HttpFrame newFrame = new HttpFrame();`
+```
+HttpFrame newFrame = new HttpFrame();
 
-`newFrame.parseHttp(inputstream);`
+newFrame.parseHttp(inputstream);
+```
 
 You will access your result in sub method :
 

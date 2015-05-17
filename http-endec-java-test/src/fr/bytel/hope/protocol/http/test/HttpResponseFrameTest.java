@@ -34,7 +34,7 @@ public class HttpResponseFrameTest {
 		HttpVersion version = new HttpVersion(1, 1);
 
 		HttpResponseFrame frame = new HttpResponseFrame(object, version,
-				headers, "");
+				headers, new byte[] {});
 
 		assertTrue("HTTP response frame test",
 				frame.toString().equals(expectation));

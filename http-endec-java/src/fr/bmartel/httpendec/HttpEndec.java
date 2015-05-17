@@ -35,23 +35,25 @@ import fr.bmartel.protocol.http.HttpResponseFrame;
 import fr.bmartel.protocol.http.HttpVersion;
 import fr.bmartel.protocol.http.StatusCodeObject;
 import fr.bmartel.protocol.http.constants.HttpMethod;
+import fr.bmartel.protocol.http.inter.IHttpFrame;
+import fr.bmartel.protocol.http.states.HttpStates;
 import fr.bmartel.protocol.http.utils.ListOfBytes;
 
 /**
  * @mainpage  HTTP Java encoder / decoder
  * 
  * 
-HTTP encoder/decoder in JAVA.
+ HTTP encoder/decoder in JAVA.
 
-* parse all your HTTP streaming
+ * parse all your HTTP streaming
 
-* chunk your bufferized data into outputstream according to value `fr.bmartel.protocol.socket.DataBufferConst.DATA_BLOCK_SIZE_LIMIT` (you can change this value if you use a JVM which does not support this one)
-* All HTTP stream is encoded in UTF-8
+ * chunk your bufferized data into outputstream according to value `fr.bmartel.protocol.socket.DataBufferConst.DATA_BLOCK_SIZE_LIMIT` (you can change this value if you use a JVM which does not support this one)
+ * All HTTP stream is encoded in UTF-8
 
-* You can build HTTP request/response independently from Http parser
+ * You can build HTTP request/response independently from Http parser
 
-`http-endec-java`      : library source<br/>
-`http-endec-java-test` : test unit for library source
+ `http-endec-java`      : library source<br/>
+ `http-endec-java-test` : test unit for library source
 
 
  */
@@ -69,26 +71,29 @@ public class HttpEndec {
 	 * 
 	 * @param args
 	 */
-	public static void main(String[] args)
-	{
+	public static void main(String[] args) {
+
+		HttpStates status = HttpStates.HTTP_STATE_NONE;
+
 		System.out.println("HTTP REQUEST TEST ");
-		/* Build custom HTTP Post request with specified headers*/
-		
+		/* Build custom HTTP Post request with specified headers */
+
 		HashMap<String, String> headers = new HashMap<String, String>();
 		headers.put("headers1", "value1");
 		headers.put("headers2", "value2");
 
 		HttpVersion version = new HttpVersion(1, 1);
 
-		HttpFrame frameRequest = new HttpFrame(HttpMethod.POST_REQUEST, version, headers,
-				"/rest/help/todo", new ListOfBytes("kind of body"));
-		
+		HttpFrame frameRequest = new HttpFrame(HttpMethod.POST_REQUEST,
+				version, headers, "/rest/help/todo", new ListOfBytes(
+						"kind of body"));
+
 		System.out.println(frameRequest.toString());
-		
+
 		System.out.println("##########################################");
 		System.out.println("HTTP RESPONSE TEST ");
-		/*Build custom HTTP response with specified headers */
-		
+		/* Build custom HTTP response with specified headers */
+
 		headers = new HashMap<String, String>();
 		headers.put("headers1", "value1");
 		headers.put("headers2", "value2");
@@ -96,76 +101,182 @@ public class HttpEndec {
 		StatusCodeObject object = new StatusCodeObject(200, "OK");
 		version = new HttpVersion(1, 1);
 
-		HttpResponseFrame frameResponse = new HttpResponseFrame(object, version,
-				headers, "");
-		
+		HttpResponseFrame frameResponse = new HttpResponseFrame(object,
+				version, headers, new byte[] {});
+
 		System.out.println(frameResponse.toString());
-		
+
 		System.out.println("##########################################");
-		System.out.println("HTTP PARSE TEST1 ");
-		/* Parse HTTP inputstream (Response test)*/
-		String basicHttpHeader = "HTTP/1.1 200 OK";
 
-		InputStream inputstream = new ByteArrayInputStream(
-				basicHttpHeader.getBytes());
+		String multipleFrame1 = "HTTP/1.1 200 OK\r\nheaders5:  value5\r\nheaders6:  value6\r\n\r\nHTTP/1.1 200 OK\r\n\r\n";
+		String multipleFrame2 = "POST /rest/help/todo HTTP/1.1\r\nheaders1:  value1\r\nheaders2:  value2\r\nContent-Length:  15\r\n\r\nbodyTobeWritten\r\nHTTP/1.1 200 OK\r\n\r\n";
+		InputStream inputstream1 = new ByteArrayInputStream(
+				multipleFrame1.getBytes());
+		InputStream inputstream2 = new ByteArrayInputStream(
+				multipleFrame2.getBytes());
+		HttpFrame httpFrame = new HttpFrame();
 
-		HttpFrame newFrame = new HttpFrame();
-		
 		try {
-			newFrame.parseHttp(inputstream);
-			
-			System.out.println("URI         : " + newFrame.getUri());
-			System.out.println("VERSION     : " + newFrame.getHttpVersion());
-			System.out.println("METHOD      : " + newFrame.getMethod());
-			System.out.println("QUERYSTRING : " + newFrame.getQueryString());
-			System.out.println("HOST        : " + newFrame.getHost());
-			System.out.println("BODY        : " + new String(newFrame.getBody().getBytes()));
+			System.out.println("_____Multiple frame input 1____");
+			status = httpFrame.parseHttp(inputstream1);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
 
-			Set<String> keys = newFrame.getHeaders().keySet();
-			Iterator<String> it = keys.iterator();
-			int count = 0;
-			while (it.hasNext()) {
-				Object key = it.next();
-				Object value = newFrame.getHeaders().get(key);
-				System.out.println("HEADERS n ° " + count + " : " + key.toString()
-						+ " => " + value.toString());
-			}
-			
+			status = httpFrame.parseHttp(inputstream1);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			System.out.println("_____Multiple frame input 2____");
+			status = httpFrame.parseHttp(inputstream2);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream2);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("##########################################");
-		System.out.println("HTTP PARSE TEST2 ");
-		/* Parse HTTP inputstream (Request test)*/
-		basicHttpHeader = "POST /rest/help/todo HTTP/1.1\r\nheaders1:  value1\r\nheaders2:  value2\r\nContent-Length:  15\r\n\r\nbodyTobeWritten\r\n";
 
-		inputstream = new ByteArrayInputStream(
-				basicHttpHeader.getBytes());
+		String multipleFrameWithError1 = "bodyTobeWritten\r\nHTTP/1.1 200 OK\r\n\r\nPOST /rest/help/todo HTTP/1.1\r\nheaders1:  value1\r\nheaders2:  value2\r\nContent-Length:  15\r\n\r\nbodyTobeWritten\r\n";
+		String multipleFrameWithError2 = "HTTP/1.1 200 OK\r\n\r\nqsdqsfefneifniznginzieg+1+2+121422°KEF0KEffpskdpfkHr\nPOST /rest/help/todo HTTP/1.1\r\nheaders1:  value1\r\nheaders2:  value2\r\nContent-Length:  15\r\n\r\nbodyTobeWritten\r\n";
+		String multipleFrameWithError3 = "HTTP/1.1 200 OK\r\n\r\nqsdqsfefneifniznginzieg+1+2+1214\r\n\r\n22°KEF0KEffpskdpfkHr\r\n\r\n\r\n\r\nPOST /rest/help/todo HTTP/1.1\r\nheaders1:  value1\r\nheaders2:  value2\r\nContent-Length:  15\r\n\r\nbodyTobeWritten\r\n";
+		String multipleFrameWithError4 = "HTTP/1.1 200 OK\r\n\r\nqsdqsfefneifniznginPOST /rest/help/todo HTTP/1.1\r\nheaders1:  \r\nzrezrzerzerzervalue1\r\nheaders2:  value2\r\nContent-Length:  15\r\n\r\nbodyTobeWritten\r\nHTTP/1.1 200 OK\r\n\r\n";
 
-		newFrame = new HttpFrame();
-		
+		InputStream inputstream3 = new ByteArrayInputStream(
+				multipleFrameWithError1.getBytes());
+		InputStream inputstream4 = new ByteArrayInputStream(
+				multipleFrameWithError2.getBytes());
+		InputStream inputstream5 = new ByteArrayInputStream(
+				multipleFrameWithError3.getBytes());
+		InputStream inputstream6 = new ByteArrayInputStream(
+				multipleFrameWithError4.getBytes());
+
 		try {
-			newFrame.parseHttp(inputstream);
-			
-			System.out.println("URI         : " + newFrame.getUri());
-			System.out.println("VERSION     : " + newFrame.getHttpVersion());
-			System.out.println("METHOD      : " + newFrame.getMethod());
-			System.out.println("QUERYSTRING : " + newFrame.getQueryString());
-			System.out.println("HOST        : " + newFrame.getHost());
-			System.out.println("BODY        : " + new String(newFrame.getBody().getBytes()));
+			System.out.println("_____Multiple frame with error input 1____");
+			status = httpFrame.parseHttp(inputstream3);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
 
-			Set<String> keys = newFrame.getHeaders().keySet();
+			status = httpFrame.parseHttp(inputstream3);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream3);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			System.out.println("_____Multiple frame with error input 2____");
+			status = httpFrame.parseHttp(inputstream4);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream4);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream4);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			System.out.println("_____Multiple frame with error input 3____");
+			status = httpFrame.parseHttp(inputstream5);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream5);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream5);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream5);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream5);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream5);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream5);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream5);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			System.out.println("_____Multiple frame with error input 4____");
+			status = httpFrame.parseHttp(inputstream6);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream6);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream6);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream6);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream6);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream6);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream6);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream6);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+
+			status = httpFrame.parseHttp(inputstream6);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * Print result of http decoding
+	 * 
+	 * @param frame
+	 *            http frame object
+	 * @param decodingStates
+	 *            final states of http decoding (to catch http decoding error)
+	 */
+	public static void printHttpFrameDecodedResult(IHttpFrame frame,
+			HttpStates decodingStates) {
+		if (frame.isHttpRequestFrame()) {
+			System.out.println("uri         : " + frame.getUri());
+			System.out.println("version     : " + frame.getHttpVersion());
+			System.out.println("method      : " + frame.getMethod());
+			System.out.println("querystring : " + frame.getQueryString());
+			System.out.println("hosy        : " + frame.getHost());
+			System.out.println("body        : "
+					+ new String(frame.getBody().getBytes()));
+
+			Set<String> keys = frame.getHeaders().keySet();
 			Iterator<String> it = keys.iterator();
 			int count = 0;
 			while (it.hasNext()) {
 				Object key = it.next();
-				Object value = newFrame.getHeaders().get(key);
-				System.out.println("HEADERS n ° " + count + " : " + key.toString()
-						+ " => " + value.toString());
+				Object value = frame.getHeaders().get(key);
+				System.out.println("headers n ° " + count + " : "
+						+ key.toString() + " => " + value.toString());
 			}
-			
-		} catch (IOException | InterruptedException e) {
-			e.printStackTrace();
+		} else if (frame.isHttpResponseFrame()) {
+			System.out
+					.println("status code         : " + frame.getStatusCode());
+			System.out.println("reason phrase       : "
+					+ frame.getReasonPhrase());
+			System.out.println("body                : "
+					+ new String(frame.getBody().getBytes()));
+
+			Set<String> keys = frame.getHeaders().keySet();
+			Iterator<String> it = keys.iterator();
+			int count = 0;
+			while (it.hasNext()) {
+				Object key = it.next();
+				Object value = frame.getHeaders().get(key);
+				System.out.println("headers n ° " + count + " : "
+						+ key.toString() + " => " + value.toString());
+			}
+		} else {
+			System.out
+					.println("Error, this http frame has not beed decoded correctly. Error code : "
+							+ decodingStates.toString());
 		}
 		System.out.println("##########################################");
 	}

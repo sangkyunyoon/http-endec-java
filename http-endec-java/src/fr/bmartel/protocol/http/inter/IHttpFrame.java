@@ -12,10 +12,24 @@ import fr.bmartel.protocol.http.utils.IByteList;
  * @author Bertrand Martel
  * 
  */
-public interface IHttpRequestFrame {
+public interface IHttpFrame {
 
 	/** http request version */
 	public HttpVersion getHttpVersion();
+
+	/**
+	 * Retrieve reason phrase of http frame (empty string if not exists)
+	 * 
+	 * @return
+	 */
+	public String getReasonPhrase();
+
+	/**
+	 * Retrieve status code of http frame (-1 if not exists)
+	 * 
+	 * @return
+	 */
+	public int getStatusCode();
 
 	/**
 	 * http reader permitting to read and parse http frame on inputstream
@@ -40,4 +54,10 @@ public interface IHttpRequestFrame {
 
 	/** request body content */
 	public IByteList getBody();
+
+	/** identify the frame as a request frame */
+	public boolean isHttpRequestFrame();
+
+	/** identify the frame as a response frame */
+	public boolean isHttpResponseFrame();
 }

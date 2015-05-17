@@ -1,5 +1,6 @@
 package fr.bmartel.protocol.http;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -24,10 +25,8 @@ public class HttpResponseFrame implements IHttpResponseFrame {
 	/** headers for response frame */
 	private HashMap<String, String> headers = new HashMap<String, String>();
 
-	/**
-	 * fix method value for http response frame (only used in websocket here)
-	 */
-	private String methodVal = "";
+	/** body for http response frame */
+	private byte[] body = new byte[] {};
 
 	/**
 	 * Builder for http response frame
@@ -41,11 +40,11 @@ public class HttpResponseFrame implements IHttpResponseFrame {
 	 */
 	public HttpResponseFrame(StatusCodeObject returnCode,
 			HttpVersion httpVersion, HashMap<String, String> headers,
-			String methodVal) {
+			byte[] body) {
 		this.returnCode = returnCode;
 		this.httpVersion = httpVersion;
 		this.headers = headers;
-		this.methodVal = methodVal;
+		this.body = body;
 	}
 
 	/**
@@ -63,7 +62,17 @@ public class HttpResponseFrame implements IHttpResponseFrame {
 			ret += cle.toString() + HttpConstants.HEADER_VALUE_DELIMITER + " "
 					+ valeur.toString() + HttpConstants.HEADER_DELEMITER;
 		}
-		ret += HttpConstants.HEADER_DELEMITER;
+		if (body.length > 0) {
+			ret += HttpConstants.HEADER_DELEMITER;
+			try {
+				ret += new String(body, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			ret += HttpConstants.HEADER_DELEMITER;
+		} else {
+			ret += HttpConstants.HEADER_DELEMITER;
+		}
 		return ret;
 	}
 
@@ -82,11 +91,7 @@ public class HttpResponseFrame implements IHttpResponseFrame {
 		return this.headers;
 	}
 
-	public String getMethodVal() {
-		return methodVal;
-	}
-
-	public void setMethodVal(String methodVal) {
-		this.methodVal = methodVal;
+	public byte[] getBody() {
+		return body;
 	}
 }

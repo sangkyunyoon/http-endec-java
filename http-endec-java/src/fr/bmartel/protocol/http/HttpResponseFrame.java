@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import fr.bmartel.protocol.http.constants.HttpConstants;
+import fr.bmartel.protocol.http.constants.HttpHeader;
 import fr.bmartel.protocol.http.inter.IHttpResponseFrame;
 
 /**
@@ -54,6 +55,13 @@ public class HttpResponseFrame implements IHttpResponseFrame {
 	public String toString() {
 		String ret = this.httpVersion.toString() + " "
 				+ this.returnCode.toString() + HttpConstants.HEADER_DELEMITER;
+
+		if (!headers.containsKey(HttpHeader.CONTENT_LENGTH)
+				&& this.body.length > 0) {
+			headers.put(HttpHeader.CONTENT_LENGTH,
+					String.valueOf(this.body.length));
+		}
+
 		Set<String> cles = this.headers.keySet();
 		Iterator<String> it = cles.iterator();
 		while (it.hasNext()) {

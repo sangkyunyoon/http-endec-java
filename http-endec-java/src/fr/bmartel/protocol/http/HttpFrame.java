@@ -132,6 +132,12 @@ public class HttpFrame implements IHttpFrame {
 					+ HttpConstants.HEADER_DELEMITER;
 		}
 
+		if (!headers.containsKey(HttpHeader.CONTENT_LENGTH)
+				&& this.body.getSize() > 0) {
+			headers.put(HttpHeader.CONTENT_LENGTH,
+					String.valueOf(this.body.getSize()));
+		}
+
 		Set<String> cles = this.headers.keySet();
 		Iterator<String> it = cles.iterator();
 
@@ -171,6 +177,7 @@ public class HttpFrame implements IHttpFrame {
 			cleanParser();
 			synchronized (in) {
 				errorCode = decodeFrame(in);
+
 				if (errorCode == HttpStates.HTTP_FRAME_OK) {
 
 					/* parse header */

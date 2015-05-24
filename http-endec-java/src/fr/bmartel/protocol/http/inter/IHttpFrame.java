@@ -60,4 +60,7 @@ public interface IHttpFrame {
 
 	/** identify the frame as a response frame */
 	public boolean isHttpResponseFrame();
+
+	/** identify if the frame has chunked body or nto */
+	public boolean isChunked();
 }

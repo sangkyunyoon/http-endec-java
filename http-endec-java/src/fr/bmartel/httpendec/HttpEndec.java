@@ -225,7 +225,19 @@ public class HttpEndec {
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
+		System.out.println("Test with chunked data");
+		System.out.println("##########################################");
 
+		String chunkedData = "HTTP/1.1 200 OK\r\nTransfer-Encoding:  chunked\r\n\r\n9\r\nabcdefghi\r\n1\r\nj\r\n";
+
+		InputStream chunkIn = new ByteArrayInputStream(chunkedData.getBytes());
+
+		try {
+			status = httpFrame.parseHttp(chunkIn);
+			HttpEndec.printHttpFrameDecodedResult(httpFrame, status);
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -243,7 +255,8 @@ public class HttpEndec {
 			System.out.println("version     : " + frame.getHttpVersion());
 			System.out.println("method      : " + frame.getMethod());
 			System.out.println("querystring : " + frame.getQueryString());
-			System.out.println("hosy        : " + frame.getHost());
+			System.out.println("host        : " + frame.getHost());
+			System.out.println("chunked     : " + frame.isChunked());
 			System.out.println("body        : "
 					+ new String(frame.getBody().getBytes()));
 
@@ -261,6 +274,7 @@ public class HttpEndec {
 					.println("status code         : " + frame.getStatusCode());
 			System.out.println("reason phrase       : "
 					+ frame.getReasonPhrase());
+			System.out.println("chunked             : " + frame.isChunked());
 			System.out.println("body                : "
 					+ new String(frame.getBody().getBytes()));
 

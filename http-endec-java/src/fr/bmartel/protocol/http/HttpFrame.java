@@ -23,8 +23,10 @@
  */
 package fr.bmartel.protocol.http;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
@@ -58,6 +60,11 @@ public class HttpFrame implements IHttpFrame {
 
 	/** identify frame as a request frame */
 	private boolean isRequestFrame = false;
+
+	/**
+	 * idnetify if http frame is chunked
+	 */
+	private boolean chunked = false;
 
 	/**
 	 * http reader object used to extract http request/response frame from
@@ -135,7 +142,7 @@ public class HttpFrame implements IHttpFrame {
 		if (!headers.containsKey(HttpHeader.CONTENT_LENGTH)
 				&& this.body.getSize() > 0) {
 			headers.put(HttpHeader.CONTENT_LENGTH,
-					String.valueOf(this.body.getSize()));
+					String.valueOf(new String(this.body.getBytes()).length()));
 		}
 
 		Set<String> cles = this.headers.keySet();
@@ -183,7 +190,56 @@ public class HttpFrame implements IHttpFrame {
 					/* parse header */
 					HttpStates headerError = parseHeader(in);
 
-					if (headerError == HttpStates.HTTP_FRAME_OK) {
+					if (headerError == HttpStates.HTTP_FRAME_OK
+							&& getHeaders().containsKey(
+									HttpHeader.TRANSFER_ENCODING.toLowerCase())
+							&& getHeaders()
+									.get(HttpHeader.TRANSFER_ENCODING
+											.toLowerCase()).toString()
+									.equals("chunked")) {
+
+						setChunked(true);
+
+						BufferedReader br = new BufferedReader(
+								new InputStreamReader(in));
+						String t;
+						String ret = "";
+
+						int init = 0;
+						int numberOfChar = 0;
+						boolean text = false;
+						while ((t = br.readLine()) != null) {
+							text = true;
+							if (init == 0 || numberOfChar == 0) {
+								try {
+									numberOfChar = (int) Long.parseLong(
+											t.toUpperCase(), 16);
+								} catch (java.lang.NumberFormatException e) {
+									break;
+								}
+								if (numberOfChar == 0) {
+									break;
+								}
+								text = false;
+								if (init == 0) {
+									init = 1;
+								}
+							}
+							if (text == true) {
+								if (t.trim().equals("0")) {
+									numberOfChar = 0;
+								} else {
+									ret += t;
+									numberOfChar = numberOfChar - t.length();
+								}
+							}
+						}
+						br.close();
+
+						this.body = new ListOfBytes(ret);
+
+					} else if (headerError == HttpStates.HTTP_FRAME_OK) {
+						setChunked(false);
 						/* parse body request */
 						return parseBody(in);
 					}
@@ -196,6 +252,15 @@ public class HttpFrame implements IHttpFrame {
 		} catch (SocketTimeoutException e) {
 			return HttpStates.SOCKET_ERROR;
 		}
+	}
+
+	private void setChunked(boolean chunked) {
+		this.chunked = chunked;
+	}
+
+	@Override
+	public boolean isChunked() {
+		return chunked;
 	}
 
 	/**

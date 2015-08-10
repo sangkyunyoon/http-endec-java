@@ -186,7 +186,6 @@ public class HttpFrame implements IHttpFrame {
 				errorCode = decodeFrame(in);
 
 				if (errorCode == HttpStates.HTTP_FRAME_OK) {
-
 					/* parse header */
 					HttpStates headerError = parseHeader(in);
 
@@ -375,7 +374,6 @@ public class HttpFrame implements IHttpFrame {
 				this.headers.put(key, value);
 			}
 		}
-
 		/* get host headers and set object value */
 		if (this.headers.containsKey(HttpHeader.HOST.toLowerCase())) {
 			this.host = this.headers.get(HttpHeader.HOST.toLowerCase())
@@ -395,6 +393,7 @@ public class HttpFrame implements IHttpFrame {
 
 		/* identify content length */
 		int length = getContentLength();
+
 		if (length > 0) {
 			int numberOfBlockToWrite = length
 					% DataBufferConst.DATA_BLOCK_SIZE_LIMIT;
@@ -412,32 +411,45 @@ public class HttpFrame implements IHttpFrame {
 					int size = length - i
 							* DataBufferConst.DATA_BLOCK_SIZE_LIMIT;
 					byte[] data = new byte[size];
+
 					for (int j = 0; j < data.length; j++) {
 						byte byteToBeRead = (byte) inputstream.read();
+
 						data[j] = byteToBeRead;
 					}
+
 					list.add(data);
+
 				} else {
 					/* this is not the last block to write */
 					byte[] data = new byte[DataBufferConst.DATA_BLOCK_SIZE_LIMIT];
+
 					for (int j = 0; j < data.length; j++) {
 						byte byteToBeRead = (byte) inputstream.read();
 						data[j] = byteToBeRead;
 					}
+
 					list.add(data);
 				}
 			}
-			if (inputstream.read() == '\r') {
-				if (inputstream.read() != '\n') {
+
+			if (inputstream.available() > 0) {
+				if (inputstream.read() == '\r') {
+
+					if (inputstream.read() != '\n') {
+						return HttpStates.HTTP_BODY_PARSE_ERROR;
+					}
+
+				} else {
 					return HttpStates.HTTP_BODY_PARSE_ERROR;
 				}
-			} else {
-				return HttpStates.HTTP_BODY_PARSE_ERROR;
 			}
+
 			this.body = list;
 		} else {
 			this.body = new ListOfBytes();
 		}
+
 		return HttpStates.HTTP_FRAME_OK;
 	}
 
